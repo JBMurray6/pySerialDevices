@@ -6,10 +6,6 @@ import time
 
 
 class abcSerialDevice(abc.ABC):
-    callStr="\n"
-    responseStr=""
-
-
     __port__=serial.Serial()
     openPorts=[]
 
@@ -68,14 +64,43 @@ class abcSerialDevice(abc.ABC):
             except:
                 self.openPorts.remove(port)
 
-    def __init__(self):
+    # def __init__(self):
+    #     self.__port__=serial.Serial()
+    #     self.__port__.timeout=500
+    #     self.Start()
+    @abc.abstractmethod
+    def Start(self):         
+        if self.connect():
+            self.initialized=True  
+        else:
+            Warning("Could not connect to ",self.deviceName )
+            self.initialized=False  
+
+
+    def __init__(self,device_name,call_str="\n",resp_str="",read_str="\n",write_prefix=""):
+        self.deviceName=device_name
+        self.callStr=call_str
+        self.respStr=resp_str
+        self.readStr=read_str
+        self.writePrefix=write_prefix
         self.__port__=serial.Serial()
         self.__port__.timeout=500
-        self.Start()
-        
+        # self.Start()
 
-    @abstractmethod
-    def Start(self):
-    
+    @abc.abstractmethod
+    def kickOffRead(self,obj=None):
+        if self.initialized:
+            self.__port__.write(self.readStr)  
+        else:
+            Warning("This device was never initialized")
 
+    @abc.abstractmethod
+    def readResult(self,obj=None):
+        if self.initialized:
+            return float(self.__port__.read_all())
+        else:
+            Warning("This device was never initialized")
+
+
+print("run")
 
