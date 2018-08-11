@@ -2,12 +2,16 @@ import abc
 import sys
 import glob
 import serial
+import time
 
 
 class abcSerialDevice(abc.ABC):
-    
-    def start(self):
-        pass
+    callStr="\n"
+    responseStr=""
+
+
+    __port__=serial.Serial()
+    openPorts=[]
 
     def findAllPorts(self):
         """ Lists serial port names
@@ -35,4 +39,43 @@ class abcSerialDevice(abc.ABC):
                 result.append(port)
             except (OSError, serial.SerialException):
                 pass
+
+        self.openPorts.clear()
+        self.openPorts.append(result)
         return result
+
+    def connect(self):
+        findAllPorts(self)
+        for port in self.openPorts:
+            try:
+                s=serial.Serial(port)
+                dictSets=self.__port__.get_settings()
+                s.apply_settings(dictSets)
+                s.open()
+                s.flush()
+                s.write(self.callStr)
+                returnStr=""
+                timerStart=time.time()
+                responseTimeout=500
+                while(responseTimeoutt>(time.time()-timerStart)):
+                    returnStr.append(s.read_all())
+                    if (not returnStr==""):
+                        if (not self.responseStr.startswith(returnStr)): 
+                            break
+                        else:
+                            pass
+                        
+            except:
+                self.openPorts.remove(port)
+
+    def __init__(self):
+        self.__port__=serial.Serial()
+        self.__port__.timeout=500
+        self.Start()
+        
+
+    @abstractmethod
+    def Start(self):
+    
+
+
