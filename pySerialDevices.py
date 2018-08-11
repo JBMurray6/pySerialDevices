@@ -102,5 +102,3 @@ class abcSerialDevice(abc.ABC):
             Warning("This device was never initialized")
 
 
-print("run")
-
