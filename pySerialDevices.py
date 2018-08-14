@@ -64,10 +64,6 @@ class abcSerialDevice(abc.ABC):
             except:
                 self.openPorts.remove(port)
 
-    # def __init__(self):
-    #     self.__port__=serial.Serial()
-    #     self.__port__.timeout=500
-    #     self.Start()
     @abc.abstractmethod
     def Start(self):         
         if self.connect():
@@ -75,7 +71,6 @@ class abcSerialDevice(abc.ABC):
         else:
             Warning("Could not connect to ",self.deviceName )
             self.initialized=False  
-
 
     def __init__(self,device_name,call_str="\n",resp_str="",read_str="\n",write_prefix=""):
         self.deviceName=device_name
@@ -86,6 +81,18 @@ class abcSerialDevice(abc.ABC):
         self.__port__=serial.Serial()
         self.__port__.timeout=500
         # self.Start()
+
+    @abc.abstractmethod
+    def write(self):
+        """Just a wrapper for serial write
+
+            This may corrupt the kickOffRead/Read result sequence 
+            if the result hasn't been read the device responds 
+        """
+        if self.initialized:
+            self.__port__.write(self.readStr)  
+        else:
+            Warning("This device was never initialized")
 
     @abc.abstractmethod
     def kickOffRead(self,obj=None):
@@ -100,5 +107,18 @@ class abcSerialDevice(abc.ABC):
             return float(self.__port__.read_all())
         else:
             Warning("This device was never initialized")
+
+class readResultStruct:
+    def __init__(self, name_type_combos=None):
+        """Expects a dictionary or array of tuples with result name and its type"""
+        if type(name_type_combos)==type({"name":type(float)}):
+            for k,v in name_type_combos.items()
+                if type(v)==type(float)#checks that it is type
+                    self.nameTypeCombos[k]=v
+                elif
+        elif name_type_combos==None:
+            self.nameTypeCombos={"result":type(float)}
+            
+
 
 
