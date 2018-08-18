@@ -4,6 +4,9 @@ import glob
 import serial
 import time
 
+class serialDeviceGroup:
+    def __init__(self,deviceArray):
+        pass
 
 class abcSerialDevice(abc.ABC):
     __port__=serial.Serial()
@@ -41,7 +44,7 @@ class abcSerialDevice(abc.ABC):
         return result
 
     def connect(self):
-        findAllPorts(self)
+        self.findAllPorts()
         for port in self.openPorts:
             try:
                 s=serial.Serial(port)
@@ -53,7 +56,7 @@ class abcSerialDevice(abc.ABC):
                 returnStr=""
                 timerStart=time.time()
                 responseTimeout=500
-                while(responseTimeoutt>(time.time()-timerStart)):
+                while(responseTimeout>(time.time()-timerStart)):
                     returnStr.append(s.read_all())
                     if (not returnStr==""):
                         if (not self.responseStr.startswith(returnStr)): 
@@ -80,7 +83,8 @@ class abcSerialDevice(abc.ABC):
         self.writePrefix=write_prefix
         self.__port__=serial.Serial()
         self.__port__.timeout=500
-        # self.Start()
+        self.Start()
+        super().__init__()
 
     @abc.abstractmethod
     def write(self):
@@ -112,13 +116,33 @@ class readResultStruct:
     def __init__(self, name_type_combos=None):
         """Expects a dictionary or array of tuples with result name and its type"""
         if type(name_type_combos)==type({"name":type(float)}):
-            for k,v in name_type_combos.items()
-                if type(v)==type(float)#checks that it is type
+            for k,v in name_type_combos.items():
+                if (v)==(float or int or str or list):
                     self.nameTypeCombos[k]=v
-                elif
+                else:
+                    Warning("Not a recognized type")
         elif name_type_combos==None:
             self.nameTypeCombos={"result":type(float)}
             
 
+class test(abcSerialDevice):
+    def __init__(self,device_name):
+        super().__init__(device_name)
 
+    def readResult(self,obj=None):
+        super().readResult()
 
+    def kickOffRead(self,obj=None):
+        super().kickOffRead()
+
+    def write(self):
+        super().write()
+
+    def Start(self):   
+        super().Start()
+
+a=test("asdf")
+
+str("asdf")
+
+print(a.openPorts)
