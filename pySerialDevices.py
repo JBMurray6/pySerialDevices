@@ -145,4 +145,4 @@ a=test("asdf")
 
 str("asdf")
 
-print(a.openPorts)
+print(a.findAllPorts())
