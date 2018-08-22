@@ -5,8 +5,33 @@ import serial
 import time
 
 class serialDeviceGroup:
-    def __init__(self,deviceArray):
-        pass
+    
+    def __init__(self,devicearray):
+        self.deviceArray=devicearray
+        for dev in self.deviceArray:
+            dev.resultsArray=[]
+
+    def kickOffAll(self):
+        for dev in self.deviceArray:
+            dev.kickOffRead()
+
+    def readResultAll(self):        
+        for dev in self.deviceArray:
+            dev.resultsArray=dev.readResult()
+
+class readResultStruct:
+    def __init__(self, name_type_combos=None):
+        """Expects a dictionary or array of tuples with result name and its type"""
+        self.nameTypeCombos={}
+        if type(name_type_combos)==type({"name":type(float)}):
+            for k,v in name_type_combos.items():
+                if (v==float or v==int or v==str or v==list):
+                    self.nameTypeCombos[k]=v
+                else:
+                    Warning("Not a recognized type")
+        elif name_type_combos==None:
+            self.nameTypeCombos={"result":float}
+            
 
 class abcSerialDevice(abc.ABC):
     __port__=serial.Serial()
@@ -112,18 +137,7 @@ class abcSerialDevice(abc.ABC):
         else:
             Warning("This device was never initialized")
 
-class readResultStruct:
-    def __init__(self, name_type_combos=None):
-        """Expects a dictionary or array of tuples with result name and its type"""
-        if type(name_type_combos)==type({"name":type(float)}):
-            for k,v in name_type_combos.items():
-                if (v)==(float or int or str or list):
-                    self.nameTypeCombos[k]=v
-                else:
-                    Warning("Not a recognized type")
-        elif name_type_combos==None:
-            self.nameTypeCombos={"result":type(float)}
-            
+
 
 class test(abcSerialDevice):
     def __init__(self,device_name):
@@ -142,7 +156,10 @@ class test(abcSerialDevice):
         super().Start()
 
 a=test("asdf")
-
+print({"r1":str,"r2":float})
+b=readResultStruct({"r1":str,"r2":dict})
 str("asdf")
 
-print(a.findAllPorts())
+a.kickOffRead()
+print(a.initialized)
+print(b.nameTypeCombos.items())
